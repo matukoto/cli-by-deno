@@ -1,6 +1,5 @@
 import { Command } from "https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts";
 
-// Learn more at https://deno.land/manual/examples/module_metadata#concepts
 if (import.meta.main) {
   await new Command()
   .name("substitution")
@@ -8,18 +7,26 @@ if (import.meta.main) {
   .description("A substitution cipher CLI tool")
   .command("encode", "Encode する")
   .arguments("<path:string>")
-  .action(substitution)
+  .action(readJson)
   .parse(Deno.args);
 }
 
 // Path: substitution.ts
-async function substitution(_: unknown, path: string) {
+async function readJson(_: unknown, path: string) {
   console.log(path);
-  const text = Deno.readTextFile(path);
-  // text を string に変換する
-  const string = await text;
-  // text を decode する
-  const json = JSON.parse(string);
+  const json = await Deno.readTextFile(path).then((a) => JSON.stringify(a));
   console.log(json);
+  const subJson = substitution(json);
+  console.log(subJson);
+}
+
+function substitution(json: string): string  {
+  return json
+  .replaceAll("\\n", "")
+  .replaceAll("\\", "")
+  .replace("\"","")
+  .replaceAll(",", "'||chr(44)||'")
+  .replaceAll("\"", "'||chr(34)||'")
+  .replace(/\|\|chr\(34\)\|\|$/, "");
 }
 
