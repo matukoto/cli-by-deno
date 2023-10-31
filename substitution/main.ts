@@ -7,12 +7,19 @@ if (import.meta.main) {
   .version("0.1.0")
   .description("A substitution cipher CLI tool")
   .command("encode", "Encode する")
-  .arguments("<json:string>")
+  .arguments("<path:string>")
   .action(substitution)
   .parse(Deno.args);
 }
 
-function substitution() {
-  console.log("Hello World!");
+// Path: substitution.ts
+async function substitution(_: unknown, path: string) {
+  console.log(path);
+  const text = Deno.readTextFile(path);
+  // text を string に変換する
+  const string = await text;
+  // text を decode する
+  const json = JSON.parse(string);
+  console.log(json);
 }
 
